@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>YouTube Video Downloader</title>
+  <style>
+    body {
+      background-color: #0e100f;
+      color: white;
+      font-family: Arial, sans-serif;
+      padding: 2rem;
+      text-align: center;
+    }
+    h1 {
+      font-size: 2rem;
+      margin-bottom: 0.5rem;
+    }
+    p.subtitle {
+      color: #ccc;
+      margin-bottom: 2rem;
+    }
+    .input-box input {
+      width: 80%;
+      padding: 1rem;
+      border-radius: 8px;
+      border: none;
+      font-size: 1rem;
+      margin: 1rem 0;
+    }
+    .action-button {
+      background-color: #e42444;
+      color: white;
+      border: none;
+      padding: 0.75rem 1.5rem;
+      font-size: 1rem;
+      border-radius: 8px;
+      cursor: pointer;
+    }
+    .action-button:hover {
+      background-color: #c01c33;
+    }
+    #results {
+      margin-top: 2rem;
+      text-align: left;
+      max-width: 600px;
+      margin-left: auto;
+      margin-right: auto;
+    }
+  </style>
+</head>
+<body>
+
+  <h1>YouTube Video Downloader</h1>
+  <p class="subtitle">Paste your YouTube link and get the video!</p>
+
+  <div class="input-box">
+    <input type="text" id="urlInput" placeholder="Paste YouTube link here" />
+  </div>
+
+  <button class="action-button" onclick="requestDownload()">Download</button>
+
+  <div id="results"></div>
+
+  <script>
+    async function requestDownload() {
+      const url = document.getElementById('urlInput').value.trim();
+      const resultDiv = document.getElementById('results');
+
+      if (!url) return alert("Please paste a valid YouTube link.");
+
+      resultDiv.innerHTML = "Processing...";
+
+      try {
+        const res = await fetch(`https://your-downloader-server.vercel.app/api?url= ${encodeURIComponent(url)}`);
+        const data = await res.json();
+
+        if (!res.ok || !data.formats) throw new Error("No formats found");
+
+        resultDiv.innerHTML = "<strong>Available Formats:</strong><ul style='list-style: disc; padding-left: 20px;'>";
+        data.formats.forEach(fmt => {
+          resultDiv.innerHTML += `<li><a href="${fmt.url}" target="_blank">${fmt.qualityLabel} - ${fmt.type}</a></li>`;
+        });
+        resultDiv.innerHTML += "</ul>";
+
+      } catch (err) {
+        resultDiv.innerHTML = `<p style="color:red;">${err.message}</p>`;
+      }
+    }
+  </script>
+
+</body>
+</html>
